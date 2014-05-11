@@ -1,0 +1,37 @@
+	<h4><?php $this->_('Cpanel.titles.loginto'); ?></h4>
+	<hr />
+	<div>
+		<form method="post" action="<?php echo $this->Html->safe(sprintf('https://%s:2083/login/', $server->meta->host_name)); ?>" target="_blank">
+			<input type="hidden" name="user" value="<?php $this->Html->_($fields->cpanel_username); ?>">
+			<input type="hidden" name="pass" value="<?php $this->Html->_($fields->cpanel_password); ?>">
+			<button class="btn btn-default btn-block" type="submit"><i class="fa fa-sign-in"></i> cPanel</button>
+		</form>
+	</div>
+	<div class="martop10">
+		<form method="post" action="<?php echo $this->Html->safe(sprintf('https://%s:2083/login/', $server->meta->host_name)); ?>" target="_blank">
+			<input type="hidden" name="user" value="<?php $this->Html->_($fields->cpanel_username); ?>">
+			<input type="hidden" name="pass" value="<?php $this->Html->_($fields->cpanel_password); ?>">
+			<input type="hidden" name="goto_uri" value="/frontend/x3/sql/PhpMyAdmin.html">
+			<button class="btn btn-default btn-block" type="submit"><i class="fa fa-sign-in"></i> phpMyAdmin</button>
+		</form>
+	</div>
+	<div class="martop10">
+		<form method="post" action="<?php echo $this->Html->safe(sprintf('https://%s:2096/login/', $server->meta->host_name)); ?>" target="_blank">
+			<input type="hidden" name="user" value="<?php $this->Html->_($fields->cpanel_username); ?>">
+			<input type="hidden" name="pass" value="<?php $this->Html->_($fields->cpanel_password); ?>">
+			<button class="btn btn-default btn-block" type="submit"><i class="fa fa-sign-in"></i> Webmail</button>
+		</form>
+	</div>
+	<?php	
+	if ($user_type == "reseller") {
+	?>	
+	<div class="martop10">
+		<form method="post" action="<?php echo $this->Html->safe(sprintf('https://%s:2087/login/', $server->meta->host_name)); ?>" target="_blank">
+			<input type="hidden" name="user" value="<?php $this->Html->_($fields->cpanel_username); ?>">
+			<input type="hidden" name="pass" value="<?php $this->Html->_($fields->cpanel_password); ?>">
+			<button class="btn btn-default btn-block" type="submit"><i class="fa fa-sign-in"></i> WHM</button>
+		</form>
+	</div>	
+	<?php	
+	}
+	?>
