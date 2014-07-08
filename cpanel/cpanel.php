@@ -13,7 +13,7 @@ class Cpanel extends Module {
 	/**
 	 * @var string The version of this module
 	 */
-	private static $version = "2.1.0";
+	private static $version = "2.1.1";
 	/**
 	 * @var string The authors of this module
 	 */
@@ -891,54 +891,42 @@ class Cpanel extends Module {
 				
 				$this->log($row->meta->host_name . "|modifyacct", serialize($params), "input", true);
 				$result = $this->parseResponse($api->modifyacct($service_fields->cpanel_username, $params));
-				
-				if (!$this->Input->errors())
-					$service_fields->cpanel_domain = $delta['cpanel_domain'];
+
 			}
 			
 			// Update password (if changed)
-			if (!$this->Input->errors() && isset($delta['cpanel_password'])) {
+			if (isset($delta['cpanel_password'])) {
 				
 				$this->log($row->meta->host_name . "|passwd", "***", "input", true);
 				$result = $this->parseResponse($api->passwd($service_fields->cpanel_username, $delta['cpanel_password']));
-				
-				if (!$this->Input->errors())
-					$service_fields->cpanel_password = $delta['cpanel_password'];
 			}
 			
 			// Update username (if changed), do last so we can always rely on $service_fields['cpanel_username'] to contain the username
-			if (!$this->Input->errors() && isset($delta['cpanel_username'])) {
+			if (isset($delta['cpanel_username'])) {
 				$params = array('newuser' => $delta['cpanel_username']);
 				$this->log($row->meta->host_name . "|modifyacct", serialize($params), "input", true);
 				$result = $this->parseResponse($api->modifyacct($service_fields->cpanel_username, $params));
-				
-				if (!$this->Input->errors())
-					$service_fields->cpanel_username = $delta['cpanel_username'];
 			}
 		}
+        
+        // Set fields to update locally
+		$fields = array("cpanel_domain", "cpanel_username", "cpanel_password");
+		foreach ($fields as $field) {
+			if (property_exists($service_fields, $field) && isset($vars[$field]))
+				$service_fields->{$field} = $vars[$field];
+		}
+        
+        // Set the confirm password to the password
+        $service_fields->cpanel_confirm_password = $service_fields->cpanel_password;
+        
+        // Return all the service fields
+		$fields = array();
+		$encrypted_fields = array("cpanel_password", "cpanel_confirm_password");
+		$encrypted_fields = array("cpanel_password", "cpanel_confirm_password");
+		foreach ($service_fields as $key => $value)
+			$fields[] = array('key' => $key, 'value' => $value, 'encrypted' => (in_array($key, $encrypted_fields) ? 1 : 0));
 		
-		return array(
-			array(
-				'key' => "cpanel_domain",
-				'value' => $service_fields->cpanel_domain,
-				'encrypted' => 0
-			),
-			array(
-				'key' => "cpanel_username",
-				'value' => $service_fields->cpanel_username,
-				'encrypted' => 0
-			),
-			array(
-				'key' => "cpanel_password",
-				'value' => $service_fields->cpanel_password,
-				'encrypted' => 1
-			),
-			array(
-				'key' => "cpanel_confirm_password",
-				'value' => $service_fields->cpanel_password,
-				'encrypted' => 1
-			)
-		);
+		return $fields;
 	}
 	
 	/**
